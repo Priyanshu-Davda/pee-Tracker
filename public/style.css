@@ -1,22 +1,127 @@
+/* General Body & Font Styling */
 body {
-  font-family: sans-serif;
-  text-align: center;
-  margin-top: 40px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: #f0f2f5;
+  color: #333;
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 
-input {
-  padding: 8px;
+/* Headings */
+h1 {
+  color: #0d6efd;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #555;
+}
+
+h3 {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  margin-top: 30px;
+  color: #555;
+}
+
+
+/* Main Container Card */
+.container {
+  background-color: #ffffff;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Input Field Styling */
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-sizing: border-box;
   font-size: 16px;
 }
 
-button {
-  padding: 10px 20px;
-  font-size: 18px;
-  margin: 10px;
-  cursor: pointer;
+input:focus {
+  outline: none;
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
 }
 
-ul {
+
+/* Button Styling */
+button {
+  width: 100%;
+  padding: 12px 20px;
+  font-size: 18px;
+  font-weight: bold;
+  margin: 10px 0;
+  cursor: pointer;
+  border-radius: 6px;
+  border: none;
+  color: #fff;
+  background-color: #0d6efd;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #0b5ed7;
+}
+
+/* Secondary/Logout Button */
+.btn-secondary {
+  background-color: #6c757d;
+}
+
+.btn-secondary:hover {
+  background-color: #5c636a;
+}
+
+/* Link Styling */
+p {
+  text-align: center;
+  margin-top: 20px;
+}
+
+a {
+  color: #0d6efd;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Leaderboard Styling */
+ul#leaderboard {
   list-style: none;
   padding: 0;
+  margin-top: 20px;
+}
+
+ul#leaderboard li {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 8px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 16px;
+}
+
+ul#leaderboard li:last-child {
+  border-bottom: none;
 }

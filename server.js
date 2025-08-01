@@ -1,22 +1,45 @@
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const bcrypt = require('bcrypt');
+const session = require('express-session');
+const SQLiteStore = require('connect-sqlite3')(session);
+
 const app = express();
 const PORT = 3000;
+const saltRounds = 10; // For bcrypt password hashing
 
 app.use(express.static('public'));
 app.use(express.json());
 
+// Session middleware setup
+app.use(session({
+    store: new SQLiteStore({
+        db: 'sessions.db',
+        dir: '.'
+    }),
+    secret: 'a very secret key', // Change this to a random string
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week
+    }
+}));
+
+
 const db = new sqlite3.Database('database.db');
 
+// Updated Database Schema
 db.serialize(() => {
-  db.run(`
+    db.run(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT UNIQUE
+      email TEXT UNIQUE,
+      password TEXT,
+      name TEXT
     )
   `);
-  db.run(`
+    db.run(`
     CREATE TABLE IF NOT EXISTS pee_logs (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id INTEGER,
@@ -26,27 +49,92 @@ db.serialize(() => {
   `);
 });
 
-app.post('/join', (req, res) => {
-  const { name } = req.body;
-  db.run(`INSERT OR IGNORE INTO users(name) VALUES(?)`, [name], function (err) {
-    if (err) return res.status(500).send('Error joining');
-    res.json({ id: this.lastID });
-  });
-});
+// Middleware to protect routes
+function isAuthenticated(req, res, next) {
+    if (req.session.userId) {
+        next();
+    } else {
+        res.status(401).send('You need to log in first.');
+    }
+}
 
-app.post('/pee', (req, res) => {
-  const { name } = req.body;
-  db.get(`SELECT id FROM users WHERE name = ?`, [name], (err, row) => {
-    if (!row) return res.status(404).send('User not found');
-    db.run(`INSERT INTO pee_logs(user_id) VALUES(?)`, [row.id], err => {
-      if (err) return res.status(500).send('Error logging pee');
-      res.sendStatus(200);
+
+// New Registration Endpoint
+app.post('/register', (req, res) => {
+    const {
+        name,
+        email,
+        password
+    } = req.body;
+    if (!name || !email || !password) {
+        return res.status(400).send('Name, email, and password are required.');
+    }
+
+    bcrypt.hash(password, saltRounds, (err, hash) => {
+        if (err) return res.status(500).send('Error hashing password');
+
+        db.run(`INSERT INTO users(name, email, password) VALUES(?, ?, ?)`, [name, email, hash], function (err) {
+            if (err) {
+                // 'UNIQUE constraint failed' error code for sqlite
+                if (err.errno === 19) {
+                    return res.status(409).send('Email already exists.');
+                }
+                return res.status(500).send('Error registering user.');
+            }
+            req.session.userId = this.lastID; // Log in the user after registration
+            res.json({
+                name
+            });
+        });
     });
-  });
 });
 
-app.get('/leaderboard', (req, res) => {
-  db.all(`
+// New Login Endpoint
+app.post('/login', (req, res) => {
+    const {
+        email,
+        password
+    } = req.body;
+    db.get(`SELECT * FROM users WHERE email = ?`, [email], (err, user) => {
+        if (err || !user) return res.status(404).send('User not found.');
+
+        bcrypt.compare(password, user.password, (err, result) => {
+            if (result) {
+                req.session.userId = user.id;
+                res.json({
+                    name: user.name
+                });
+            } else {
+                res.status(401).send('Invalid password.');
+            }
+        });
+    });
+});
+
+// New Logout Endpoint
+app.post('/logout', (req, res) => {
+    req.session.destroy(err => {
+        if (err) {
+            return res.status(500).send('Could not log out.');
+        } else {
+            res.sendStatus(200);
+        }
+    });
+});
+
+
+// Modified Pee Logging - now protected
+app.post('/pee', isAuthenticated, (req, res) => {
+    const userId = req.session.userId;
+    db.run(`INSERT INTO pee_logs(user_id) VALUES(?)`, [userId], err => {
+        if (err) return res.status(500).send('Error logging pee');
+        res.sendStatus(200);
+    });
+});
+
+// Modified Leaderboard - now protected
+app.get('/leaderboard', isAuthenticated, (req, res) => {
+    db.all(`
     SELECT users.name, COUNT(pee_logs.id) AS count
     FROM users
     LEFT JOIN pee_logs ON users.id = pee_logs.user_id
@@ -54,11 +142,33 @@ app.get('/leaderboard', (req, res) => {
     GROUP BY users.id
     ORDER BY count DESC
   `, (err, rows) => {
-    if (err) return res.status(500).send('Error loading leaderboard');
-    res.json(rows);
-  });
+        if (err) return res.status(500).send('Error loading leaderboard');
+        res.json(rows);
+    });
 });
 
+// Endpoint to check login status
+app.get('/session', (req, res) => {
+    if (req.session.userId) {
+        db.get(`SELECT name FROM users WHERE id = ?`, [req.session.userId], (err, user) => {
+            if (err || !user) {
+                return res.status(404).json({
+                    loggedIn: false
+                });
+            }
+            res.json({
+                loggedIn: true,
+                name: user.name
+            });
+        });
+    } else {
+        res.json({
+            loggedIn: false
+        });
+    }
+});
+
+
 app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+    console.log(`Server running at http://localhost:${PORT}`);
 });

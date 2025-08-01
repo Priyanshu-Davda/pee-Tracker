@@ -5,18 +5,36 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Pee Tracker 💦</h1>
+  <div class="container">
+    <h1>Pee Tracker 💦</h1>
 
-  <div id="joinSection">
-    <input id="nameInput" placeholder="Enter your name" />
-    <button onclick="join()">Join</button>
-  </div>
+    <div id="authSection">
+      <div id="loginForm">
+        <h2>Login</h2>
+        <input id="loginEmail" type="email" placeholder="Enter your email" required />
+        <input id="loginPassword" type="password" placeholder="Enter your password" required />
+        <button onclick="login()">Login</button>
+        <p>New user? <a href="#" onclick="toggleAuthForms()">Register here</a></p>
+      </div>
 
-  <div id="appSection" style="display:none;">
-    <h2>Hi, <span id="username"></span>!</h2>
-    <button onclick="logPee()">🚽 I Just Peed</button>
-    <h3>Leaderboard (last 7 days)</h3>
-    <ul id="leaderboard"></ul>
+      <div id="registerForm" style="display:none;">
+        <h2>Register</h2>
+        <input id="registerName" type="text" placeholder="Enter your name" required />
+        <input id="registerEmail" type="email" placeholder="Enter your email" required />
+        <input id="registerPassword" type="password" placeholder="Choose a password" required />
+        <button onclick="register()">Register</button>
+        <p>Already have an account? <a href="#" onclick="toggleAuthForms()">Login here</a></p>
+      </div>
+    </div>
+
+
+    <div id="appSection" style="display:none;">
+      <h2>Hi, <span id="username"></span>!</h2>
+      <button onclick="logPee()">🚽 I Just Peed</button>
+      <button onclick="logout()" class="btn-secondary">Logout</button>
+      <h3>Leaderboard (last 7 days)</h3>
+      <ul id="leaderboard"></ul>
+    </div>
   </div>
 
   <script src="script.js"></script>

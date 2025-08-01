@@ -1,0 +1,29 @@
+{
+  "name": "pee-tracker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Priyanshu-Davda/pee-tracker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Priyanshu-Davda/pee-tracker/issues"
+  },
+  "homepage": "https://github.com/Priyanshu-Davda/pee-tracker#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.7",
+    "bcrypt": "^5.1.1",
+    "express-session": "^1.18.0",
+    "connect-sqlite3": "^0.9.15"
+  },
+  "devDependencies": {}
+}
