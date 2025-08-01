@@ -1,33 +1,37 @@
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
+const path =require('path'); // <-- Add this line
 const bcrypt = require('bcrypt');
 const session = require('express-session');
 const SQLiteStore = require('connect-sqlite3')(session);
 
 const app = express();
-const PORT = 3000;
-const saltRounds = 10; // For bcrypt password hashing
+const PORT = process.env.PORT || 3000; // <-- Change this line
+const saltRounds = 10;
+
+// Path for our persistent data
+const dataDir = path.join(__dirname, '/var/data'); // <-- Add this line
+const dbPath = path.join(dataDir, 'database.db'); // <-- Add this line
+const sessionDbPath = path.join(dataDir, 'sessions.db'); // <-- Add this line
 
 app.use(express.static('public'));
 app.use(express.json());
 
-// Session middleware setup
+// Session middleware setup - UPDATED
 app.use(session({
     store: new SQLiteStore({
         db: 'sessions.db',
-        dir: '.'
+        dir: dataDir // <-- Change this line to use the persistent directory
     }),
-    secret: 'a very secret key', // Change this to a random string
+    secret: 'a very secret key',
     resave: false,
     saveUninitialized: false,
     cookie: {
-        maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week
+        maxAge: 1000 * 60 * 60 * 24 * 7
     }
 }));
 
-
-const db = new sqlite3.Database('database.db');
+const db = new sqlite3.Database(dbPath); // <-- Change this line
 
 // Updated Database Schema
 db.serialize(() => {
@@ -170,5 +174,5 @@ app.get('/session', (req, res) => {
 
 
 app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
+  console.log(`Server running at http://localhost:${PORT}`);
 });
