@@ -65,11 +65,43 @@ function isAuthenticated(req, res, next) {
     }
 }
 
+// Helper function to validate name
+function validateName(name) {
+    if (!name || name.length < 2) {
+        return 'Name must be at least 2 characters long';
+    }
+    if (!/^[a-zA-Z\s'-]+$/.test(name)) {
+        return 'Name can only contain letters, spaces, hyphens, and apostrophes';
+    }
+    if (name.trim() !== name) {
+        return 'Name cannot start or end with spaces';
+    }
+    return null;
+}
+
 // Registration Endpoint
 app.post('/register', (req, res) => {
     const { name, email, password } = req.body;
+    
     if (!name || !email || !password) {
         return res.status(400).send('Name, email, and password are required.');
+    }
+
+    // Validate name
+    const nameError = validateName(name);
+    if (nameError) {
+        return res.status(400).send(nameError);
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).send('Please enter a valid email address.');
+    }
+
+    // Validate password strength
+    if (password.length < 6) {
+        return res.status(400).send('Password must be at least 6 characters long.');
     }
 
     bcrypt.hash(password, saltRounds, (err, hash) => {
@@ -77,9 +109,9 @@ app.post('/register', (req, res) => {
 
         try {
             const stmt = db.prepare(`INSERT INTO users(name, email, password) VALUES(?, ?, ?)`);
-            const info = stmt.run(name, email, hash);
+            const info = stmt.run(name.trim(), email.toLowerCase().trim(), hash);
             req.session.userId = info.lastInsertRowid;
-            res.json({ name });
+            res.json({ name: name.trim() });
         } catch (error) {
             if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
                 return res.status(409).send('Email already exists.');
@@ -92,9 +124,14 @@ app.post('/register', (req, res) => {
 // Login Endpoint
 app.post('/login', (req, res) => {
     const { email, password } = req.body;
+    
+    if (!email || !password) {
+        return res.status(400).send('Email and password are required.');
+    }
+
     try {
         const stmt = db.prepare(`SELECT * FROM users WHERE email = ?`);
-        const user = stmt.get(email);
+        const user = stmt.get(email.toLowerCase().trim());
 
         if (!user) {
             return res.status(404).send('User not found.');
@@ -136,6 +173,47 @@ app.post('/pee', isAuthenticated, (req, res) => {
     }
 });
 
+// Dashboard Statistics Endpoint
+app.get('/dashboard-stats', isAuthenticated, (req, res) => {
+    const userId = req.session.userId;
+    try {
+        // Get today's count
+        const todayStmt = db.prepare(`
+            SELECT COUNT(*) AS count
+            FROM pee_logs
+            WHERE user_id = ? AND DATE(timestamp) = DATE('now')
+        `);
+        const todayResult = todayStmt.get(userId);
+
+        // Get this week's count
+        const weekStmt = db.prepare(`
+            SELECT COUNT(*) AS count
+            FROM pee_logs
+            WHERE user_id = ? AND DATE(timestamp) >= DATE('now', '-7 days')
+        `);
+        const weekResult = weekStmt.get(userId);
+
+        // Get last pee time
+        const lastPeeStmt = db.prepare(`
+            SELECT timestamp
+            FROM pee_logs
+            WHERE user_id = ?
+            ORDER BY timestamp DESC
+            LIMIT 1
+        `);
+        const lastPeeResult = lastPeeStmt.get(userId);
+
+        res.json({
+            todayCount: todayResult.count,
+            weekCount: weekResult.count,
+            lastPeeTime: lastPeeResult ? lastPeeResult.timestamp : null
+        });
+    } catch (error) {
+        console.error('Error loading dashboard stats:', error);
+        res.status(500).send('Error loading dashboard statistics');
+    }
+});
+
 // Leaderboard Endpoint
 app.get('/leaderboard', isAuthenticated, (req, res) => {
     try {
@@ -143,13 +221,16 @@ app.get('/leaderboard', isAuthenticated, (req, res) => {
             SELECT users.name, COUNT(pee_logs.id) AS count
             FROM users
             LEFT JOIN pee_logs ON users.id = pee_logs.user_id
-            WHERE DATE(pee_logs.timestamp) >= DATE('now', '-7 days')
-            GROUP BY users.id
+            WHERE pee_logs.timestamp IS NULL OR DATE(pee_logs.timestamp) >= DATE('now', '-7 days')
+            GROUP BY users.id, users.name
+            HAVING COUNT(pee_logs.id) > 0
             ORDER BY count DESC
+            LIMIT 10
         `);
         const rows = stmt.all();
         res.json(rows);
     } catch (error) {
+        console.error('Error loading leaderboard:', error);
         res.status(500).send('Error loading leaderboard');
     }
 });

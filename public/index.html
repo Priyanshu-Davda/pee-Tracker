@@ -2,7 +2,286 @@
 <html>
 <head>
   <title>Pee Tracker 💦</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    /* General Body & Font Styling */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background-attachment: fixed;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(120, 119, 198, 0.2) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* Headings */
+    h1 {
+      color: #fff;
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 2.5em;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #555;
+      font-size: 1.8em;
+    }
+
+    h3 {
+      border-bottom: 2px solid #e0e6ff;
+      padding-bottom: 10px;
+      margin-top: 30px;
+      color: #555;
+      font-size: 1.3em;
+    }
+
+    /* Main Container Card */
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 450px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* Input Field Styling */
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 15px;
+      margin-bottom: 15px;
+      border: 2px solid #e1e8f0;
+      border-radius: 12px;
+      box-sizing: border-box;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      transform: translateY(-2px);
+    }
+
+    /* Button Styling */
+    button {
+      width: 100%;
+      padding: 15px 20px;
+      font-size: 18px;
+      font-weight: bold;
+      margin: 10px 0;
+      cursor: pointer;
+      border-radius: 12px;
+      border: none;
+      color: #fff;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    /* Secondary/Logout Button */
+    .btn-secondary {
+      background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+      box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+    }
+
+    .btn-secondary:hover {
+      box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
+    }
+
+    /* Pee Button Special Styling */
+    .pee-button {
+      font-size: 24px;
+      padding: 20px;
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+      margin: 20px 0;
+    }
+
+    .pee-button:hover {
+      box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+    }
+
+    /* Link Styling */
+    p {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    a:hover {
+      color: #764ba2;
+      text-decoration: underline;
+    }
+
+    /* Dashboard Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #f8f9ff 0%, #e9ecff 100%);
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      border: 1px solid rgba(102, 126, 234, 0.1);
+    }
+
+    .stat-number {
+      font-size: 2em;
+      font-weight: bold;
+      color: #667eea;
+      margin-bottom: 5px;
+    }
+
+    .stat-label {
+      font-size: 0.9em;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .last-pee-info {
+      background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+      padding: 15px;
+      border-radius: 12px;
+      margin: 15px 0;
+      text-align: center;
+      border: 1px solid rgba(255, 193, 7, 0.3);
+    }
+
+    .last-pee-time {
+      font-weight: bold;
+      color: #856404;
+      font-size: 1.1em;
+    }
+
+    /* Leaderboard Styling */
+    ul#leaderboard {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+
+    ul#leaderboard li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, #f8f9ff 0%, #e9ecff 100%);
+      border-radius: 12px;
+      font-size: 16px;
+      border: 1px solid rgba(102, 126, 234, 0.1);
+      transition: transform 0.2s ease;
+    }
+
+    ul#leaderboard li:hover {
+      transform: translateX(5px);
+    }
+
+    ul#leaderboard li:first-child {
+      background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+      border-color: rgba(255, 193, 7, 0.3);
+    }
+
+    .leaderboard-rank {
+      background: #667eea;
+      color: white;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-right: 15px;
+    }
+
+    .leaderboard-rank.first {
+      background: #ffc107;
+      color: #212529;
+    }
+
+    /* Error message styling */
+    .error-message {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      border: 1px solid #f5c6cb;
+      text-align: center;
+    }
+
+    /* Loading animation */
+    .loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 480px) {
+      .container {
+        padding: 20px;
+        margin: 10px;
+      }
+      
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      h1 {
+        font-size: 2em;
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -10,7 +289,8 @@
 
     <div id="authSection">
       <div id="loginForm">
-        <h2>Login</h2>
+        <h2>Welcome Back!</h2>
+        <div id="loginError" class="error-message" style="display:none;"></div>
         <input id="loginEmail" type="email" placeholder="Enter your email" required />
         <input id="loginPassword" type="password" placeholder="Enter your password" required />
         <button onclick="login()">Login</button>
@@ -18,25 +298,317 @@
       </div>
 
       <div id="registerForm" style="display:none;">
-        <h2>Register</h2>
-        <input id="registerName" type="text" placeholder="Enter your name" required />
+        <h2>Join the Community!</h2>
+        <div id="registerError" class="error-message" style="display:none;"></div>
+        <input id="registerName" type="text" placeholder="Enter your full name" required />
         <input id="registerEmail" type="email" placeholder="Enter your email" required />
-        <input id="registerPassword" type="password" placeholder="Choose a password" required />
-        <button onclick="register()">Register</button>
+        <input id="registerPassword" type="password" placeholder="Choose a strong password" required />
+        <button onclick="register()">Create Account</button>
         <p>Already have an account? <a href="#" onclick="toggleAuthForms()">Login here</a></p>
       </div>
     </div>
 
-
     <div id="appSection" style="display:none;">
-      <h2>Hi, <span id="username"></span>!</h2>
-      <button onclick="logPee()">🚽 I Just Peed</button>
+      <h2>Welcome, <span id="username"></span>! 👋</h2>
+      
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number" id="todayCount">0</div>
+          <div class="stat-label">Today</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="weekCount">0</div>
+          <div class="stat-label">This Week</div>
+        </div>
+      </div>
+
+      <div class="last-pee-info" id="lastPeeInfo">
+        <div>Last pee: <span class="last-pee-time" id="lastPeeTime">Never recorded</span></div>
+      </div>
+
+      <button onclick="logPee()" class="pee-button">🚽 I Just Peed!</button>
       <button onclick="logout()" class="btn-secondary">Logout</button>
-      <h3>Leaderboard (last 7 days)</h3>
+      
+      <h3>🏆 Leaderboard (Last 7 Days)</h3>
       <ul id="leaderboard"></ul>
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    // Check login status when the page loads
+    window.onload = function() {
+        fetch('/session')
+            .then(res => res.json())
+            .then(data => {
+                if (data.loggedIn) {
+                    showApp(data.name);
+                } else {
+                    showAuth();
+                }
+            });
+    };
+
+    function showError(elementId, message) {
+        const errorDiv = document.getElementById(elementId);
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+        setTimeout(() => {
+            errorDiv.style.display = 'none';
+        }, 5000);
+    }
+
+    function validateName(name) {
+        if (name.length < 2) {
+            return "Name must be at least 2 characters long";
+        }
+        if (!/^[a-zA-Z\s'-]+$/.test(name)) {
+            return "Name can only contain letters, spaces, hyphens, and apostrophes";
+        }
+        if (name.trim() !== name) {
+            return "Name cannot start or end with spaces";
+        }
+        return null;
+    }
+
+    function toggleAuthForms() {
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        loginForm.style.display = loginForm.style.display === 'none' ? 'block' : 'none';
+        registerForm.style.display = registerForm.style.display === 'none' ? 'block' : 'none';
+        
+        // Clear error messages when switching forms
+        document.getElementById('loginError').style.display = 'none';
+        document.getElementById('registerError').style.display = 'none';
+    }
+
+    function register() {
+        const name = document.getElementById('registerName').value.trim();
+        const email = document.getElementById('registerEmail').value.trim();
+        const password = document.getElementById('registerPassword').value.trim();
+
+        if (!name || !email || !password) {
+            showError('registerError', 'Please fill all fields!');
+            return;
+        }
+
+        // Validate name
+        const nameError = validateName(name);
+        if (nameError) {
+            showError('registerError', nameError);
+            return;
+        }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            showError('registerError', 'Please enter a valid email address');
+            return;
+        }
+
+        // Validate password strength
+        if (password.length < 6) {
+            showError('registerError', 'Password must be at least 6 characters long');
+            return;
+        }
+
+        const button = event.target;
+        button.textContent = 'Creating Account...';
+        button.classList.add('loading');
+
+        fetch('/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name,
+                    email,
+                    password
+                })
+            }).then(res => {
+                if (!res.ok) {
+                    return res.text().then(text => {
+                        throw new Error(text)
+                    });
+                }
+                return res.json();
+            })
+            .then(data => {
+                showApp(data.name);
+            })
+            .catch(err => {
+                showError('registerError', err.message);
+            })
+            .finally(() => {
+                button.textContent = 'Create Account';
+                button.classList.remove('loading');
+            });
+    }
+
+    function login() {
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value.trim();
+        
+        if (!email || !password) {
+            showError('loginError', 'Please enter email and password!');
+            return;
+        }
+
+        const button = event.target;
+        button.textContent = 'Logging in...';
+        button.classList.add('loading');
+
+        fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email,
+                    password
+                })
+            }).then(res => {
+                if (!res.ok) {
+                    return res.text().then(text => {
+                        throw new Error(text)
+                    });
+                }
+                return res.json();
+            })
+            .then(data => {
+                showApp(data.name);
+            })
+            .catch(err => {
+                showError('loginError', err.message);
+            })
+            .finally(() => {
+                button.textContent = 'Login';
+                button.classList.remove('loading');
+            });
+    }
+
+    function logout() {
+        fetch('/logout', {
+            method: 'POST'
+        }).then(() => {
+            showAuth();
+        });
+    }
+
+    function logPee() {
+        const button = event.target;
+        button.textContent = '🚽 Logging...';
+        button.classList.add('loading');
+
+        fetch('/pee', {
+            method: 'POST'
+        }).then(res => {
+            if (!res.ok) {
+                alert('Something went wrong. You may be logged out.');
+                showAuth();
+            } else {
+                loadDashboardData();
+                loadLeaderboard();
+            }
+        }).finally(() => {
+            button.textContent = '🚽 I Just Peed!';
+            button.classList.remove('loading');
+        });
+    }
+
+    function loadDashboardData() {
+        fetch('/dashboard-stats')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('todayCount').textContent = data.todayCount || 0;
+                document.getElementById('weekCount').textContent = data.weekCount || 0;
+                
+                if (data.lastPeeTime) {
+                    const lastPeeDate = new Date(data.lastPeeTime);
+                    const now = new Date();
+                    const timeDiff = now - lastPeeDate;
+                    
+                    let timeAgo;
+                    if (timeDiff < 60000) {
+                        timeAgo = 'Just now';
+                    } else if (timeDiff < 3600000) {
+                        timeAgo = `${Math.floor(timeDiff / 60000)} minutes ago`;
+                    } else if (timeDiff < 86400000) {
+                        timeAgo = `${Math.floor(timeDiff / 3600000)} hours ago`;
+                    } else {
+                        timeAgo = `${Math.floor(timeDiff / 86400000)} days ago`;
+                    }
+                    
+                    document.getElementById('lastPeeTime').textContent = timeAgo;
+                } else {
+                    document.getElementById('lastPeeTime').textContent = 'Never recorded';
+                }
+            })
+            .catch(err => {
+                console.error('Error loading dashboard data:', err);
+            });
+    }
+
+    function loadLeaderboard() {
+        fetch('/leaderboard')
+            .then(res => res.json())
+            .then(data => {
+                const ul = document.getElementById('leaderboard');
+                ul.innerHTML = '';
+                data.forEach((user, index) => {
+                    const li = document.createElement('li');
+                    
+                    const rank = document.createElement('span');
+                    rank.className = 'leaderboard-rank' + (index === 0 ? ' first' : '');
+                    rank.textContent = index + 1;
+                    
+                    const name = document.createElement('span');
+                    name.textContent = user.name;
+                    
+                    const count = document.createElement('span');
+                    count.textContent = `${user.count} pees`;
+                    count.style.fontWeight = 'bold';
+                    count.style.color = '#667eea';
+                    
+                    li.appendChild(rank);
+                    li.appendChild(name);
+                    li.appendChild(count);
+                    ul.appendChild(li);
+                });
+            });
+    }
+
+    // UI transition functions
+    function showApp(name) {
+        document.getElementById('username').textContent = name;
+        document.getElementById('authSection').style.display = 'none';
+        document.getElementById('appSection').style.display = 'block';
+        loadDashboardData();
+        loadLeaderboard();
+    }
+
+    function showAuth() {
+        document.getElementById('authSection').style.display = 'block';
+        document.getElementById('appSection').style.display = 'none';
+        
+        // Clear form fields
+        document.getElementById('loginEmail').value = '';
+        document.getElementById('loginPassword').value = '';
+        document.getElementById('registerName').value = '';
+        document.getElementById('registerEmail').value = '';
+        document.getElementById('registerPassword').value = '';
+    }
+
+    // Add Enter key support for forms
+    document.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            if (document.getElementById('loginForm').style.display !== 'none') {
+                login();
+            } else if (document.getElementById('registerForm').style.display !== 'none') {
+                register();
+            }
+        }
+    });
+  </script>
 </body>
 </html>
