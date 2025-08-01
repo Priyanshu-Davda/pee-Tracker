@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pee Tracker 💦</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Pee Tracker 💦</h1>
+
+  <div id="joinSection">
+    <input id="nameInput" placeholder="Enter your name" />
+    <button onclick="join()">Join</button>
+  </div>
+
+  <div id="appSection" style="display:none;">
+    <h2>Hi, <span id="username"></span>!</h2>
+    <button onclick="logPee()">🚽 I Just Peed</button>
+    <h3>Leaderboard (last 7 days)</h3>
+    <ul id="leaderboard"></ul>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
