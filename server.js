@@ -1,16 +1,21 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
 const SQLiteStore = require('connect-sqlite3')(session);
-const Database = require('better-sqlite3'); // <-- Import better-sqlite3
+const Database = require('better-sqlite3');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const saltRounds = 10;
 
-// Path for our persistent data
+// Ensure data directory exists
 const dataDir = path.join(__dirname, '/var/data');
+if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+}
+
 const dbPath = path.join(dataDir, 'database.db');
 
 app.use(express.static('public'));
@@ -60,8 +65,7 @@ function isAuthenticated(req, res, next) {
     }
 }
 
-
-// New Registration Endpoint
+// Registration Endpoint
 app.post('/register', (req, res) => {
     const { name, email, password } = req.body;
     if (!name || !email || !password) {
@@ -85,7 +89,7 @@ app.post('/register', (req, res) => {
     });
 });
 
-// New Login Endpoint
+// Login Endpoint
 app.post('/login', (req, res) => {
     const { email, password } = req.body;
     try {
@@ -109,7 +113,7 @@ app.post('/login', (req, res) => {
     }
 });
 
-// New Logout Endpoint
+// Logout Endpoint
 app.post('/logout', (req, res) => {
     req.session.destroy(err => {
         if (err) {
@@ -120,8 +124,7 @@ app.post('/logout', (req, res) => {
     });
 });
 
-
-// Modified Pee Logging
+// Pee Logging Endpoint
 app.post('/pee', isAuthenticated, (req, res) => {
     const userId = req.session.userId;
     try {
@@ -133,7 +136,7 @@ app.post('/pee', isAuthenticated, (req, res) => {
     }
 });
 
-// Modified Leaderboard
+// Leaderboard Endpoint
 app.get('/leaderboard', isAuthenticated, (req, res) => {
     try {
         const stmt = db.prepare(`
@@ -151,7 +154,7 @@ app.get('/leaderboard', isAuthenticated, (req, res) => {
     }
 });
 
-// Endpoint to check login status
+// Check login status
 app.get('/session', (req, res) => {
     if (req.session.userId) {
         try {
@@ -168,7 +171,6 @@ app.get('/session', (req, res) => {
         res.json({ loggedIn: false });
     }
 });
-
 
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
