@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Panel - Pee Tracker 💦</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+      background-attachment: fixed;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 30px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .header h1 {
+      margin: 0;
+      color: #2c3e50;
+      font-size: 2.5em;
+    }
+
+    .stats-overview {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 25px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .stat-number {
+      font-size: 3em;
+      font-weight: bold;
+      color: #3498db;
+      margin-bottom: 10px;
+    }
+
+    .stat-label {
+      font-size: 1.1em;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .content-section {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 30px;
+      border-radius: 15px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .section-title {
+      font-size: 1.8em;
+      color: #2c3e50;
+      margin-bottom: 25px;
+      padding-bottom: 10px;
+      border-bottom: 3px solid #3498db;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .data-table th,
+    .data-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    .data-table th {
+      background: #f8f9fa;
+      color: #2c3e50;
+      font-weight: bold;
+      text-transform: uppercase;
+      font-size: 0.9em;
+      letter-spacing: 0.5px;
+    }
+
+    .data-table tr:hover {
+      background: rgba(52, 152, 219, 0.05);
+    }
+
+    .badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      font-weight: bold;
+    }
+
+    .badge-success {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .badge-info {
+      background: #cce7ff;
+      color: #004085;
+    }
+
+    .badge-warning {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      margin: 5px;
+    }
+
+    .btn-primary {
+      background: #3498db;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #2980b9;
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+      transform: translateY(-2px);
+    }
+
+    .loading {
+      text-align: center;
+      color: #666;
+      font-style: italic;
+    }
+
+    .back-link {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px 15px;
+      border-radius: 20px;
+      color: #3498db;
+      text-decoration: none;
+      font-weight: bold;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .back-link:hover {
+      background: white;
+      transform: translateY(-2px);
+    }
+
+    .refresh-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #27ae60;
+      color: white;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2em;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .refresh-btn:hover {
+      background: #229954;
+      transform: rotate(180deg);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+    }
+
+    @media (max-width: 768px) {
+      .stats-overview {
+        grid-template-columns: 1fr;
+      }
+      
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+      
+      .content-section {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="/" class="back-link">← Back to App</a>
+  <button class="refresh-btn" onclick="loadAdminData()" title="Refresh Data">↻</button>
+
+  <div class="header">
+    <h1>🛠️ Admin Panel</h1>
+    <p>Pee Tracker System Overview</p>
+  </div>
+
+  <div class="stats-overview" id="statsOverview">
+    <div class="loading">Loading statistics...</div>
+  </div>
+
+  <div class="grid-2">
+    <div class="content-section">
+      <h2 class="section-title">📊 Recent Users</h2>
+      <div id="recentUsers" class="loading">Loading users...</div>
+    </div>
+
+    <div class="content-section">
+      <h2 class="section-title">🏆 Most Active Groups</h2>
+      <div id="activeGroups" class="loading">Loading groups...</div>
+    </div>
+  </div>
+
+  <script>
+    let adminData = null;
+
+    window.onload = function() {
+      loadAdminData();
+    };
+
+    function loadAdminData() {
+      // Show loading states
+      document.getElementById('statsOverview').innerHTML = '<div class="loading">Loading statistics...</div>';
+      document.getElementById('recentUsers').innerHTML = '<div class="loading">Loading users...</div>';
+      document.getElementById('activeGroups').innerHTML = '<div class="loading">Loading groups...</div>';
+
+      fetch('/admin/stats')
+        .then(res => {
+          if (!res.ok) {
+            throw new Error('Not authorized');
+          }
+          return res.json();
+        })
+        .then(data => {
+          adminData = data;
+          displayStats(data);
+          displayRecentUsers(data.recentUsers);
+          displayActiveGroups(data.activeGroups);
+        })
+        .catch(err => {
+          console.error('Error loading admin data:', err);
+          if (err.message === 'Not authorized') {
+            alert('Access denied. Admin privileges required.');
+            window.location.href = '/';
+          } else {
+            document.getElementById('statsOverview').innerHTML = '<div style="color: red;">Error loading data</div>';
+          }
+        });
+    }
+
+    function displayStats(data) {
+      const statsHtml = `
+        <div class="stat-card">
+          <div class="stat-number">${data.totalUsers}</div>
+          <div class="stat-label">Total Users</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">${data.totalGroups}</div>
+          <div class="stat-label">Total Groups</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">${data.totalPees}</div>
+          <div class="stat-label">Total Pees</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">${data.todayPees}</div>
+          <div class="stat-label">Today's Pees</div>
+        </div>
+      `;
+      document.getElementById('statsOverview').innerHTML = statsHtml;
+    }
+
+    function displayRecentUsers(users) {
+      if (!users || users.length === 0) {
+        document.getElementById('recentUsers').innerHTML = '<p>No recent users</p>';
+        return;
+      }
+
+      const tableHtml = `
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Joined</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${users.map(user => `
+              <tr>
+                <td>${user.name}</td>
+                <td>${user.email}</td>
+                <td>${new Date(user.created_at).toLocaleDateString()}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+      document.getElementById('recentUsers').innerHTML = tableHtml;
+    }
+
+    function displayActiveGroups(groups) {
+      if (!groups || groups.length === 0) {
+        document.getElementById('activeGroups').innerHTML = '<p>No active groups</p>';
+        return;
+      }
+
+      const tableHtml = `
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Group Name</th>
+              <th>Invite Code</th>
+              <th>Members</th>
+              <th>Weekly Activity</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${groups.map(group => `
+              <tr>
+                <td>${group.name}</td>
+                <td>
+                  <span class="badge badge-info" onclick="copyToClipboard('${group.invite_code}')" style="cursor: pointer;" title="Click to copy">
+                    ${group.invite_code}
+                  </span>
+                </td>
+                <td>
+                  <span class="badge badge-success">${group.member_count}</span>
+                </td>
+                <td>
+                  <span class="badge badge-warning">${group.pee_count} pees</span>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+      document.getElementById('activeGroups').innerHTML = tableHtml;
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        // Create a temporary notification
+        const notification = document.createElement('div');
+        notification.textContent = 'Copied to clipboard!';
+        notification.style.cssText = `
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background: #27ae60;
+          color: white;
+          padding: 10px 20px;
+          border-radius: 8px;
+          z-index: 1000;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        `;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+          notification.remove();
+        }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy text: ', err);
+        alert('Failed to copy to clipboard');
+      });
+    }
+
+    // Auto-refresh every 30 seconds
+    setInterval(loadAdminData, 30000);
+  </script>
+</body>
+</html>

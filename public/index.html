@@ -2,17 +2,409 @@
 <html>
 <head>
   <title>Pee Tracker 💦</title>
-  <link rel="stylesheet" href="./style.css">
+  <style>
+    /* General Body & Font Styling */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background-attachment: fixed;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
 
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(120, 119, 198, 0.2) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* Headings */
+    h1 {
+      color: #fff;
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 2.5em;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #555;
+      font-size: 1.8em;
+    }
+
+    h3 {
+      border-bottom: 2px solid #e0e6ff;
+      padding-bottom: 10px;
+      margin-top: 30px;
+      color: #555;
+      font-size: 1.3em;
+    }
+
+    /* Main Container Card */
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* Navigation Tabs */
+    .nav-tabs {
+      display: flex;
+      background: rgba(102, 126, 234, 0.1);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 20px;
+    }
+
+    .nav-tab {
+      flex: 1;
+      text-align: center;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .nav-tab.active {
+      background: #667eea;
+      color: white;
+    }
+
+    /* Input Field Styling */
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 15px;
+      margin-bottom: 15px;
+      border: 2px solid #e1e8f0;
+      border-radius: 12px;
+      box-sizing: border-box;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      transform: translateY(-2px);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    /* Button Styling */
+    button {
+      width: 100%;
+      padding: 15px 20px;
+      font-size: 18px;
+      font-weight: bold;
+      margin: 10px 0;
+      cursor: pointer;
+      border-radius: 12px;
+      border: none;
+      color: #fff;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Button variants */
+    .btn-secondary {
+      background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+      box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    }
+
+    .btn-warning {
+      background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+      box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+    }
+
+    .btn-small {
+      width: auto;
+      padding: 8px 16px;
+      font-size: 14px;
+      margin: 5px;
+    }
+
+    /* Pee Button Special Styling */
+    .pee-button {
+      font-size: 24px;
+      padding: 20px;
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+      margin: 20px 0;
+    }
+
+    /* Link Styling */
+    p {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    a:hover {
+      color: #764ba2;
+      text-decoration: underline;
+    }
+
+    /* Dashboard Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #f8f9ff 0%, #e9ecff 100%);
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      border: 1px solid rgba(102, 126, 234, 0.1);
+    }
+
+    .stat-number {
+      font-size: 2em;
+      font-weight: bold;
+      color: #667eea;
+      margin-bottom: 5px;
+    }
+
+    .stat-label {
+      font-size: 0.9em;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Group Cards */
+    .group-card {
+      background: linear-gradient(135deg, #f8f9ff 0%, #e9ecff 100%);
+      padding: 20px;
+      border-radius: 12px;
+      margin: 15px 0;
+      border: 1px solid rgba(102, 126, 234, 0.1);
+    }
+
+    .group-name {
+      font-size: 1.3em;
+      font-weight: bold;
+      color: #667eea;
+      margin-bottom: 8px;
+    }
+
+    .group-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .invite-code {
+      background: #667eea;
+      color: white;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .last-pee-info {
+      background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+      padding: 15px;
+      border-radius: 12px;
+      margin: 15px 0;
+      text-align: center;
+      border: 1px solid rgba(255, 193, 7, 0.3);
+    }
+
+    .last-pee-time {
+      font-weight: bold;
+      color: #856404;
+      font-size: 1.1em;
+    }
+
+    /* Leaderboard Styling */
+    ul#leaderboard {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+
+    ul#leaderboard li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, #f8f9ff 0%, #e9ecff 100%);
+      border-radius: 12px;
+      font-size: 16px;
+      border: 1px solid rgba(102, 126, 234, 0.1);
+      transition: transform 0.2s ease;
+    }
+
+    ul#leaderboard li:hover {
+      transform: translateX(5px);
+    }
+
+    ul#leaderboard li:first-child {
+      background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+      border-color: rgba(255, 193, 7, 0.3);
+    }
+
+    .leaderboard-rank {
+      background: #667eea;
+      color: white;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-right: 15px;
+    }
+
+    .leaderboard-rank.first {
+      background: #ffc107;
+      color: #212529;
+    }
+
+    /* Error/Success message styling */
+    .message {
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .error-message {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .success-message {
+      background: #d1edff;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+
+    /* Loading animation */
+    .loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    /* Admin link */
+    .admin-link {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px 15px;
+      border-radius: 20px;
+      color: #667eea;
+      text-decoration: none;
+      font-weight: bold;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 480px) {
+      .container {
+        padding: 20px;
+        margin: 10px;
+      }
+      
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      h1 {
+        font-size: 2em;
+      }
+      
+      .nav-tabs {
+        flex-direction: column;
+      }
+      
+      .nav-tab {
+        margin-bottom: 2px;
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <h1>Pee Tracker 💦</h1>
 
+    <!-- Admin Link (only shown for admins) -->
+    <a href="/admin" id="adminLink" class="admin-link" style="display:none;">Admin Panel</a>
+
     <div id="authSection">
       <div id="loginForm">
         <h2>Welcome Back!</h2>
-        <div id="loginError" class="error-message" style="display:none;"></div>
+        <div id="loginError" class="message error-message" style="display:none;"></div>
         <input id="loginEmail" type="email" placeholder="Enter your email" required />
         <input id="loginPassword" type="password" placeholder="Enter your password" required />
         <button onclick="login()">Login</button>
@@ -21,61 +413,117 @@
 
       <div id="registerForm" style="display:none;">
         <h2>Join the Community!</h2>
-        <div id="registerError" class="error-message" style="display:none;"></div>
+        <div id="registerError" class="message error-message" style="display:none;"></div>
         <input id="registerName" type="text" placeholder="Enter your full name" required />
         <input id="registerEmail" type="email" placeholder="Enter your email" required />
         <input id="registerPassword" type="password" placeholder="Choose a strong password" required />
+        <input id="registerInviteCode" type="text" placeholder="Invite code (optional)" />
         <button onclick="register()">Create Account</button>
         <p>Already have an account? <a href="#" onclick="toggleAuthForms()">Login here</a></p>
       </div>
     </div>
 
     <div id="appSection" style="display:none;">
-      <h2>Welcome, <span id="username"></span>! 👋</h2>
-      
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-number" id="todayCount">0</div>
-          <div class="stat-label">Today</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number" id="weekCount">0</div>
-          <div class="stat-label">This Week</div>
-        </div>
+      <!-- Navigation Tabs -->
+      <div class="nav-tabs">
+        <div class="nav-tab active" onclick="showTab('dashboard')">Dashboard</div>
+        <div class="nav-tab" onclick="showTab('groups')">Groups</div>
       </div>
 
-      <div class="last-pee-info" id="lastPeeInfo">
-        <div>Last pee: <span class="last-pee-time" id="lastPeeTime">Never recorded</span></div>
+      <!-- Dashboard Tab -->
+      <div id="dashboardTab">
+        <h2>Welcome, <span id="username"></span>! 👋</h2>
+        
+        <!-- Group Selector -->
+        <div style="margin-bottom: 20px;">
+          <select id="groupSelector" onchange="changeGroup()">
+            <option value="">All Groups</option>
+          </select>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-number" id="todayCount">0</div>
+            <div class="stat-label">Today</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="weekCount">0</div>
+            <div class="stat-label">This Week</div>
+          </div>
+        </div>
+
+        <div class="last-pee-info" id="lastPeeInfo">
+          <div>Last pee: <span class="last-pee-time" id="lastPeeTime">Never recorded</span></div>
+        </div>
+
+        <button onclick="logPee()" class="pee-button">🚽 I Just Peed!</button>
+        
+        <h3>🏆 Leaderboard (Last 7 Days)</h3>
+        <ul id="leaderboard"></ul>
+
+        <button onclick="logout()" class="btn-secondary">Logout</button>
       </div>
 
-      <button onclick="logPee()" class="pee-button">🚽 I Just Peed!</button>
-      <button onclick="logout()" class="btn-secondary">Logout</button>
-      
-      <h3>🏆 Leaderboard (Last 7 Days)</h3>
-      <ul id="leaderboard"></ul>
+      <!-- Groups Tab -->
+      <div id="groupsTab" style="display:none;">
+        <h2>My Groups</h2>
+        
+        <div id="groupsError" class="message error-message" style="display:none;"></div>
+        <div id="groupsSuccess" class="message success-message" style="display:none;"></div>
+
+        <!-- Create Group Section -->
+        <div class="group-card">
+          <h3>Create New Group</h3>
+          <input id="newGroupName" type="text" placeholder="Group name" required />
+          <textarea id="newGroupDescription" placeholder="Group description (optional)"></textarea>
+          <button onclick="createGroup()" class="btn-success">Create Group</button>
+        </div>
+
+        <!-- Join Group Section -->
+        <div class="group-card">
+          <h3>Join Group</h3>
+          <input id="joinInviteCode" type="text" placeholder="Enter invite code" required />
+          <button onclick="joinGroup()" class="btn-warning">Join Group</button>
+        </div>
+
+        <!-- My Groups List -->
+        <h3>My Groups</h3>
+        <div id="groupsList">
+          <p>Loading groups...</p>
+        </div>
+      </div>
     </div>
   </div>
 
   <script>
+    let currentUser = null;
+    let currentGroups = [];
+    let selectedGroupId = null;
+
     // Check login status when the page loads
     window.onload = function() {
         fetch('/session')
             .then(res => res.json())
             .then(data => {
                 if (data.loggedIn) {
+                    currentUser = data;
                     showApp(data.name);
+                    if (data.isAdmin) {
+                        document.getElementById('adminLink').style.display = 'block';
+                    }
                 } else {
                     showAuth();
                 }
             });
     };
 
-    function showError(elementId, message) {
-        const errorDiv = document.getElementById(elementId);
-        errorDiv.textContent = message;
-        errorDiv.style.display = 'block';
+    function showMessage(elementId, message, isError = true) {
+        const messageDiv = document.getElementById(elementId);
+        messageDiv.textContent = message;
+        messageDiv.className = `message ${isError ? 'error-message' : 'success-message'}`;
+        messageDiv.style.display = 'block';
         setTimeout(() => {
-            errorDiv.style.display = 'none';
+            messageDiv.style.display = 'none';
         }, 5000);
     }
 
@@ -90,6 +538,22 @@
             return "Name cannot start or end with spaces";
         }
         return null;
+    }
+
+    function showTab(tabName) {
+        // Update tab buttons
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        event.target.classList.add('active');
+
+        // Show/hide tab content
+        document.getElementById('dashboardTab').style.display = tabName === 'dashboard' ? 'block' : 'none';
+        document.getElementById('groupsTab').style.display = tabName === 'groups' ? 'block' : 'none';
+
+        if (tabName === 'groups') {
+            loadGroups();
+        }
     }
 
     function toggleAuthForms() {
@@ -107,29 +571,27 @@
         const name = document.getElementById('registerName').value.trim();
         const email = document.getElementById('registerEmail').value.trim();
         const password = document.getElementById('registerPassword').value.trim();
+        const inviteCode = document.getElementById('registerInviteCode').value.trim();
 
         if (!name || !email || !password) {
-            showError('registerError', 'Please fill all fields!');
+            showMessage('registerError', 'Please fill all required fields!');
             return;
         }
 
-        // Validate name
         const nameError = validateName(name);
         if (nameError) {
-            showError('registerError', nameError);
+            showMessage('registerError', nameError);
             return;
         }
 
-        // Validate email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-            showError('registerError', 'Please enter a valid email address');
+            showMessage('registerError', 'Please enter a valid email address');
             return;
         }
 
-        // Validate password strength
         if (password.length < 6) {
-            showError('registerError', 'Password must be at least 6 characters long');
+            showMessage('registerError', 'Password must be at least 6 characters long');
             return;
         }
 
@@ -145,7 +607,8 @@
                 body: JSON.stringify({
                     name,
                     email,
-                    password
+                    password,
+                    inviteCode
                 })
             }).then(res => {
                 if (!res.ok) {
@@ -159,7 +622,7 @@
                 showApp(data.name);
             })
             .catch(err => {
-                showError('registerError', err.message);
+                showMessage('registerError', err.message);
             })
             .finally(() => {
                 button.textContent = 'Create Account';
@@ -172,7 +635,7 @@
         const password = document.getElementById('loginPassword').value.trim();
         
         if (!email || !password) {
-            showError('loginError', 'Please enter email and password!');
+            showMessage('loginError', 'Please enter email and password!');
             return;
         }
 
@@ -198,10 +661,14 @@
                 return res.json();
             })
             .then(data => {
+                currentUser = data;
                 showApp(data.name);
+                if (data.isAdmin) {
+                    document.getElementById('adminLink').style.display = 'block';
+                }
             })
             .catch(err => {
-                showError('loginError', err.message);
+                showMessage('loginError', err.message);
             })
             .finally(() => {
                 button.textContent = 'Login';
@@ -213,7 +680,145 @@
         fetch('/logout', {
             method: 'POST'
         }).then(() => {
+            currentUser = null;
+            currentGroups = [];
+            selectedGroupId = null;
             showAuth();
+        });
+    }
+
+    function createGroup() {
+        const name = document.getElementById('newGroupName').value.trim();
+        const description = document.getElementById('newGroupDescription').value.trim();
+
+        if (!name || name.length < 3) {
+            showMessage('groupsError', 'Group name must be at least 3 characters long');
+            return;
+        }
+
+        const button = event.target;
+        button.textContent = 'Creating...';
+        button.classList.add('loading');
+
+        fetch('/create-group', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name, description })
+        }).then(res => {
+            if (!res.ok) {
+                return res.text().then(text => {
+                    throw new Error(text)
+                });
+            }
+            return res.json();
+        }).then(data => {
+            showMessage('groupsSuccess', `Group created! Invite code: ${data.inviteCode}`, false);
+            document.getElementById('newGroupName').value = '';
+            document.getElementById('newGroupDescription').value = '';
+            loadGroups();
+        }).catch(err => {
+            showMessage('groupsError', err.message);
+        }).finally(() => {
+            button.textContent = 'Create Group';
+            button.classList.remove('loading');
+        });
+    }
+
+    function joinGroup() {
+        const inviteCode = document.getElementById('joinInviteCode').value.trim();
+
+        if (!inviteCode) {
+            showMessage('groupsError', 'Please enter an invite code');
+            return;
+        }
+
+        const button = event.target;
+        button.textContent = 'Joining...';
+        button.classList.add('loading');
+
+        fetch('/join-group', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ inviteCode })
+        }).then(res => {
+            if (!res.ok) {
+                return res.text().then(text => {
+                    throw new Error(text)
+                });
+            }
+            return res.json();
+        }).then(data => {
+            showMessage('groupsSuccess', data.message, false);
+            document.getElementById('joinInviteCode').value = '';
+            loadGroups();
+        }).catch(err => {
+            showMessage('groupsError', err.message);
+        }).finally(() => {
+            button.textContent = 'Join Group';
+            button.classList.remove('loading');
+        });
+    }
+
+    function loadGroups() {
+        fetch('/my-groups')
+            .then(res => res.json())
+            .then(data => {
+                currentGroups = data;
+                displayGroups(data);
+                updateGroupSelector();
+            })
+            .catch(err => {
+                document.getElementById('groupsList').innerHTML = '<p>Error loading groups</p>';
+            });
+    }
+
+    function displayGroups(groups) {
+        const container = document.getElementById('groupsList');
+        
+        if (groups.length === 0) {
+            container.innerHTML = '<p>You haven\'t joined any groups yet. Create one or join using an invite code!</p>';
+            return;
+        }
+
+        container.innerHTML = groups.map(group => `
+            <div class="group-card">
+                <div class="group-name">${group.name}</div>
+                <p>${group.description || 'No description'}</p>
+                <div class="group-info">
+                    <span>${group.member_count} members</span>
+                    <span class="invite-code" onclick="copyInviteCode('${group.invite_code}')" title="Click to copy">
+                        ${group.invite_code}
+                    </span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function updateGroupSelector() {
+        const selector = document.getElementById('groupSelector');
+        selector.innerHTML = '<option value="">All Groups</option>';
+        
+        currentGroups.forEach(group => {
+            const option = document.createElement('option');
+            option.value = group.id;
+            option.textContent = group.name;
+            selector.appendChild(option);
+        });
+    }
+
+    function changeGroup() {
+        selectedGroupId = document.getElementById('groupSelector').value || null;
+        loadDashboardData();
+        loadLeaderboard();
+    }
+
+    function copyInviteCode(code) {
+        navigator.clipboard.writeText(code).then(() => {
+            alert('Invite code copied to clipboard!');
         });
     }
 
@@ -223,7 +828,11 @@
         button.classList.add('loading');
 
         fetch('/pee', {
-            method: 'POST'
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ groupId: selectedGroupId })
         }).then(res => {
             if (!res.ok) {
                 alert('Something went wrong. You may be logged out.');
@@ -239,7 +848,9 @@
     }
 
     function loadDashboardData() {
-        fetch('/dashboard-stats')
+        const params = selectedGroupId ? `?groupId=${selectedGroupId}` : '';
+        
+        fetch(`/dashboard-stats${params}`)
             .then(res => res.json())
             .then(data => {
                 document.getElementById('todayCount').textContent = data.todayCount || 0;
@@ -272,11 +883,19 @@
     }
 
     function loadLeaderboard() {
-        fetch('/leaderboard')
+        const params = selectedGroupId ? `?groupId=${selectedGroupId}` : '';
+        
+        fetch(`/leaderboard${params}`)
             .then(res => res.json())
             .then(data => {
                 const ul = document.getElementById('leaderboard');
                 ul.innerHTML = '';
+                
+                if (data.length === 0) {
+                    ul.innerHTML = '<li style="justify-content: center;">No activity in the selected timeframe</li>';
+                    return;
+                }
+                
                 data.forEach((user, index) => {
                     const li = document.createElement('li');
                     
@@ -305,6 +924,7 @@
         document.getElementById('username').textContent = name;
         document.getElementById('authSection').style.display = 'none';
         document.getElementById('appSection').style.display = 'block';
+        loadGroups();
         loadDashboardData();
         loadLeaderboard();
     }
@@ -312,6 +932,7 @@
     function showAuth() {
         document.getElementById('authSection').style.display = 'block';
         document.getElementById('appSection').style.display = 'none';
+        document.getElementById('adminLink').style.display = 'none';
         
         // Clear form fields
         document.getElementById('loginEmail').value = '';
@@ -319,6 +940,7 @@
         document.getElementById('registerName').value = '';
         document.getElementById('registerEmail').value = '';
         document.getElementById('registerPassword').value = '';
+        document.getElementById('registerInviteCode').value = '';
     }
 
     // Add Enter key support for forms
